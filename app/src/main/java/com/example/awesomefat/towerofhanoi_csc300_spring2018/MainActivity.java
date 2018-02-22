@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity
 {
@@ -13,6 +14,8 @@ public class MainActivity extends AppCompatActivity
     private ViewGroup placeholderVG;
     private Button[] towerButtons = new Button[3];
     private boolean shouldPop = true;
+    private boolean theEnd = false;
+    public int buttonsPressed = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -23,6 +26,7 @@ public class MainActivity extends AppCompatActivity
         this.towerButtons[0] = (Button)this.findViewById(R.id.tower0Button);
         this.towerButtons[1] = (Button)this.findViewById(R.id.tower1Button);
         this.towerButtons[2] = (Button)this.findViewById(R.id.tower2Button);
+        this.showMoves = (Button)this.findViewId(R.id.showMovesButton);
 
         this.placeholderVG = (ViewGroup)this.findViewById(R.id.placeholderVG);
 
@@ -37,6 +41,8 @@ public class MainActivity extends AppCompatActivity
         ViewGroup tower0 = (ViewGroup)this.findViewById(R.id.tower0);
         ViewGroup tower1 = (ViewGroup)this.findViewById(R.id.tower1);
         ViewGroup tower2 = (ViewGroup)this.findViewById(R.id.tower2);
+        ViewGroup showMoves = (ViewGroup)this.findViewId(R.id.showMovesButton);
+        ViewGroup theEnd = (ViewGroup)this.findViewId(R.id.theEnd);
 
         Tower t0 = new Tower(tower0);
         Tower t1 = new Tower(tower1);
@@ -61,10 +67,16 @@ public class MainActivity extends AppCompatActivity
             this.placeholder = temp;
             this.placeholderVG.addView(temp.getDiskVisual());
             this.shouldPop = false;
+            buttonsPressed++;
             for(Button b : this.towerButtons)
             {
                 b.setText("PUSH");
             }
+        }
+
+        else
+        {
+            Toast.makeText(MainActivity.this, "Nothing to pop!", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -77,10 +89,27 @@ public class MainActivity extends AppCompatActivity
             this.towers[towerIndex].push(this.placeholder);
             this.placeholder = null;
             this.shouldPop = true;
+            buttonsPressed++;
             for(Button b : this.towerButtons)
             {
                 b.setText("POP");
             }
+        }
+
+        else
+        {
+            Toast.makeText(MainActivity.this, "Cannot push onto smaller value.", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void theEnd(int towerIndex)
+    {
+        Disk temp = this.t2[towerIndex].peek();
+        if(this.placeholder.getSize() == 3)
+        {
+            theEnd = true;
+            towerButtons.setEnabled(false);
+            android.widget.Toast.makeText(MainActivity, "Congrats You Won!", Toast.LENGTH_SHORT).show();
         }
     }
 
